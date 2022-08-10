@@ -4,6 +4,7 @@
 #include "Tank.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/InputComponent.h"
 
 ATank::ATank()
 {
@@ -18,5 +19,21 @@ ATank::ATank()
             camera->SetupAttachment(springArm);
         }
     }
+    dLocation = {0.0f,0.0f,0.0f};
 
+}
+
+void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+    //APawn::SetupPlayerInputComponent(PlayerInputComponent);
+
+    PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ATank::MoveForward );
+}
+
+void ATank::MoveForward(float axisValue)
+{
+    if(axisValue){
+        dLocation.X = axisValue;
+        AddActorLocalOffset(dLocation);
+    }
 }
