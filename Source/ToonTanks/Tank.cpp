@@ -5,6 +5,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ATank::ATank()
 {
@@ -19,7 +20,10 @@ ATank::ATank()
             camera->SetupAttachment(springArm);
         }
     }
-    dLocation = {0.0f,0.0f,0.0f};
+    // dLocation = {0.0f,0.0f,0.0f};
+    this->velocity = {0.0f,0.0f,0.0f};
+    this->acceleration = {1.0f,0.0f,0.0f};
+    this->frictionPower = 5.0f;
 
 }
 
@@ -32,8 +36,15 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ATank::MoveForward(float axisValue)
 {
+    FVector dLocation = {0.0f,0.0f,0.0f};
+    float dt = UGameplayStatics::GetWorldDeltaSeconds(this);
+
     if(axisValue){
-        dLocation.X = axisValue;
-        AddActorLocalOffset(dLocation);
+        this->velocity += axisValue * this->acceleration * dt; 
     }
+    
+    FVector friction = -(this->frictionPower) * this->velocity * dt;
+    this->velocity += friction;
+    dLocation = this->velocity;
+    AddActorLocalOffset(dLocation);
 }
